@@ -11,3 +11,14 @@ https://www.mianshigee.com/tutorial/homeland/d45e56921f3f3040.md
 
 discourse
 https://github.com/discourse/discourse/blob/main/docs/INSTALL-cloud.md#3-install-discourse
+
+修改app.yml文件 文件修改如果错了，再重新编绎非常花时间，所以最好一次搞定，还是就是邮箱非常重要，填写真实的。
+
+templates: 
+– "templates/postgres.template.yml" 
+– "templates/redis.template.yml" 
+– "templates/sshd.template.yml" 
+– "templates/web.template.yml" 
+– "templates/web.china.template.yml" 
+配置文件的这个部分，需要添加- “templates/web.china.template.yml”;
+否则在./launcher bootstrap app初始化时会报错RuntimeError: …，原因得问GWF
