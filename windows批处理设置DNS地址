@@ -1,0 +1,29 @@
+@echo off
+setlocal enabledelayedexpansion
+
+REM 请在下面的变量中输入您希望设置的DNS地址
+set "dns1=8.8.8.8"
+set "dns2=8.8.4.4"
+
+REM 获取当前网络连接名称
+for /f "tokens=3 delims=: " %%I in ('netsh interface show interface ^| findstr /c:"已连接"') do (
+    set "connectionName=%%I"
+)
+
+REM 设置DNS地址
+echo 设置DNS地址为 %dns1% 和 %dns2% ...
+netsh interface ipv4 set dns name="%connectionName%" static %dns1% primary
+netsh interface ipv4 add dns name="%connectionName%" %dns2% index=2
+
+REM 显示设置后的DNS信息
+echo.
+echo 当前DNS配置:
+netsh interface ipv4 show dns name="%connectionName%"
+
+echo.
+echo DNS设置已完成。
+
+endlocal
+
+
+net use * /del /y
