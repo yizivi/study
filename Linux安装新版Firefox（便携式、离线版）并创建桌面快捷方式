@@ -1,0 +1,49 @@
+下载Firefox
+① 直接使用用旧版浏览器登上火狐官网下载Linux版bz2安装包（便携式）；
+② 若该Linux系统部署在虚拟机内的，在虚拟机外部登上火狐官网，下载好所需版本后，然后将安装包拖拽进虚拟机里；内网环境亦同理。
+
+直接解压
+下载好文件后，到文件所在目录下，将其解压到“/usr/local/”目录下（其他目录也可以，比如/opt下）
+sudo tar -jxzf Firefox-latest-x86_64.tar.bz2 -C /usr/local/
+
+接着访问方才解压的目录“/usr/local/firefox”下（该压缩包解压即可用）
+直接双击文件“firefox”就能打开火狐浏览器了，如下图所示：
+
+卸载旧版本
+通过以下命令可以移除旧版的Firefox
+rpm -qa|grep firefox 
+rpm -e firefox || yum remove firefox
+
+创建快捷方式
+为了能够快速访问火狐浏览器，我们还需创建一个快捷方式。
+到“/usr/share/applications”目录下创建一个快捷方式(桌面配置文件)
+# 通过 vi 或 vim 编辑文件。若文件不存在则新建一个空文件。
+ sudo vim firefox.desktop
+在创建空文件后，可以通过以下命令使用编辑器来编辑文件
+
+sudo gedit firefox.desktop
+
+
+文件内容如下：（可执行文件位置和图标位置都是需要看实际存放位置的，参数仅可参考，不可轻易照搬）
+
+[Desktop Entry]
+Name=Firefox
+Comment=this is firefox
+Exec=/usr/local/firefox/firefox
+Icon=/usr/local/firefox/browser/chrome/icons/default/default128.png
+Terminal=false
+Type=Application
+Categories=Application;Network; 
+————————————————
+
+
+图标位置可参考如图中所示的位置来寻找
+
+保存退出后，就可以在左上角的应用程序栏中查看到火狐浏览器了
+
+最后，右键选中快捷方式，将其复制到桌面即可。
+
+
+
+
+https://blog.csdn.net/qq_31812017/article/details/113585987
