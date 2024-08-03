@@ -1,0 +1,114 @@
+Powershell批量安装Windows服务器补丁
+
+场景
+Windows Server经常需要安装安全补丁，wsus安装补丁的策略，尤其在重启服务器这块，不满足需求，人工逐台安装又需要大量的时间。因此部署一台控制机，通过运行PowerShell脚本远程批量安装Windows补丁，可以极大的提升工作效率。
+目标
+批量安装Windows server补丁。
+引言
+Microsoft定义了一个 WS-Management 的协议，这个协议为计算机设备远程交换管理数据提供了一个公开的标准。在 Windows 平台上，MS 通过 Windows 远程管理服务(Windows Remote Management service，简称 WinRM) 实现了 WS-Management 协议。这就是我们可以通过 PowerShell 执行远程操作的基础，因为 PowerShell 就是通过 WinRM 服务来进行远程操作的。
+
+但实际测试中，当我们使用如下命令远程安装时候，却总是安装失败。
+Invoke-Command -ComputerName  $Computer -ScriptBlock { wusa.exe   xxx.msu /quiet /norestart}
+● 1.
+● 2.
+通过日志可以看到，报错如下: 无法安装 Windows 更新 ，因为发生错误: 2147942405“拒绝访问。“
+原来，微软不支持使用wusa和其API远程安装补丁更新，解决方案是使用dism或者add-windowspackage代替。
+https://support.microsoft.com/en-us/help/2773898/windows-update-standalone-installer-wusa-returns-0x5-error-access-deni
+
+实现
+批量安装主要三步：
+● 拷贝补丁文件【下载补丁->控制机->目标机】
+● 远程安装补丁文件
+● 验证安装结果
+
+第一步: 拷贝文件
+下载补丁文件(.msu)，拷贝到控制机对应目录(如c:\fix)，通过脚本将其解压(加压后便于dism或者add-windowspackage安装)并拷贝到目标机。
+“computer_list.txt” 用户存储目标机器名称，每行一个。这个文件是唯二需要管理员手工编辑的(另一个就是下载补丁拷贝到控制机)。
+
+本步： 右击,使用powershell运行"copy.ps1"
+#Script_name:copy.ps1
+$PC = Get-Content("C:\scripts_wusa\computer_list.txt")
+$FileMSU = Get-ChildItem C:\fix -Name
+$CAB_PATH = "C:\fix_cab\"
+wusa.exe "C:\fix\$FileMSU" /extract:$CAB_PATH
+#解压过程休息90s
+Start-Sleep -Seconds 90
+$i = 0
+foreach ($h in $PC){
+$i++
+Copy-Item -Path $CAB_PATH -Destination \\$h\C$\ -Recurse -Force
+if ($h -eq $PC[-1]){
+    Write-Progress -Activity "进度显示" -status "正在处理最后一台主机 $h !"
+    Write-Output "总计处理 $i 台主机,传输完毕!"
+    #Start-Sleep -Seconds 20
+    pause
+}
+else{
+    Write-Progress -Activity "进度显示" -status "正在处理 第 $i 台主机 $h ,请耐心等待!"  -PercentComplete  ($i/$PC.count*100)
+}
+}
+
+第二步: 运行远程安装脚本
+这个步骤共2个脚本，一个脚本用来执行安装动作，另一个脚本用来调用第一个，执行远程操作。
+本步： 右击,使用powershell运行 “Remote_install.ps1”
+
+要注意的是： 
+域内计算机，域管理员登陆控制机后，远程操作时不用在进行认证。域外计算机，必须要通过参数 -Credential 提供远程操作管理凭据认证。
+安装脚本：
+#Script_name:action_fix.ps1
+$FileCAB = Get-ChildItem  C:\fix_cab  *KB*.cab -Name
+Foreach ($file in $FileCAB)
+{
+ Add-WindowsPackage -Online -PackagePath C:\fix_cab\$file  -NoRestart  
+}
+
+远程调用：
+#Script_name:Remote_install.ps1
+$PC = Get-Content("C:\scripts_wusa\computer_list.txt")
+$i=0
+foreach ($h in $PC){
+$i++
+#域内计算机
+Invoke-Command -ComputerName $h -FilePath C:\scripts_wusa\action_fix.ps1
+#未加域计算机
+#Invoke-Command -ComputerName $h -FilePath C:\action_fix.ps1 -Credential administrator
+Write-Progress -Activity "安装进度" -Status "正在为主机 $h 安装补丁，请耐心等待!" -PercentComplete ($i/$PC.Count*100)
+}
+
+第三步： 远程安装结果验证
+这个步骤也2个脚本，一个脚本用来执行检查动作，另一个脚本用来调用第一个，执行远程操作。
+本步： 右击,使用powershell运行 “check_fix_install.ps1”
+检查安装结果：
+#Script_name:check_show
+$FileCAB = Get-ChildItem  C:\fix_cab  *KB*.cab -Name
+Function Get_fix()
+{
+     foreach ($i in $FileCAB){
+        $KB = $i.Split("-")[1]
+        Get-hotfix | where {$_.HotFixID -eq $KB }
+      }
+}
+Get_fix
+
+远程调用：
+#Script_name:check_fix_install.ps1
+$PCs = Get-Content("C:\scripts_wusa\computer_list.txt")
+foreach ($h in $PCs)
+{ 
+    $result = Invoke-Command -ComputerName $h -FilePath C:\scripts_wusa\get_fix.ps1
+    if ($result){
+        Write-Output "$h  install Sucess!"
+    }
+    else{
+        Write-Output "$h  install Failure!"  
+    }
+   
+       
+}
+pause
+
+
+看一下第三步的运行结果（可以只打印安装失败的主机，毕竟我们更关心安装失败的）：
+补丁安装成功后，剩下的就是管理员选择合理的时间，将服务器重启就可以了,也可以通过婆powershell 远程批量重启。【Restart-Computer -ComputerName pc-1,pc-2,pc-N -Force】
+
+来自 <https://blog.51cto.com/magic3/2447210> 
