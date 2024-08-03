@@ -1,0 +1,40 @@
+yum -y install mod_ssl
+
+在 CentOS 8 安装成功后，如果希望启用 ssl，你需要执行下面的一些操作。
+安装 mod_ssl
+
+使用下面的命令安装 mod_ssl
+# dnf install mod_ssl
+
+确定 mod_ssl 被启用
+这一步不是必须的，但是你可以使用下面的命令确定安装的 mod_ssl 已经被启用了。
+httpd -M | grep ssl     旧版本使用  (apachectl -M | grep ssl)
+
+服务器可能会返回：
+
+
+类似上面的情况和内容，你可用通过上面的返回确定 ssl 已经被启用了。
+防火墙启用 443 端口
+如果已经安装了防火墙的话，你需要为你的防火墙开放 443 的端口。
+需要执行下面的命令：
+
+开启防火墙：
+sudo systemctl start firewalld
+  ○  
+添加443端口开放：
+firewall-cmd --add-port=443/tcp --permanent
+  ○  
+防火墙重新加载：
+firewall-cmd --reload
+
+
+
+
+
+直接重启apache以后，报错
+将这None变为ALL，
+重启Apache就可以了。
+
+来自 <https://blog.csdn.net/meilidebabi/article/details/108024518> 
+
+
