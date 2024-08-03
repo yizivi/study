@@ -1,0 +1,8 @@
+https://blog.csdn.net/weixin_35952534/article/details/116315815
+unset LANG
+mount -o remount,rw /sysroot
+chroot /sysroot
+passwd # 在此处修改密码
+touch /.autorelabel
+exit
+exit
