@@ -1,0 +1,20 @@
+https://www.markou.me/2019/12/get-hyper-v-vm-creation-date-using-powershell/
+
+
+Get Hyper-V VM creation date using PowerShell
+ George Markou December 30, 2019  0 Comments
+Banner
+Reading Time: < 1 minute
+Hi everyone! Just dropping by to share with you a couple of lazy style one-liners which will allow you to acquire useful information from your Hyper-V VMs. More specifically, the creation time of which your Hyper-V VMs were originally created.
+
+
+Get a list of the non-running and running VMs and their creation time. To be used with standalone Hyper-V hosts.
+Get-VM * | Select-Object VMName,CreationTime | Sort-Object CreationTime
+PowerShellCopy
+Get the creation time of a particular VM. To be used with standalone Hyper-V hosts.
+Get-VM -Name "NameOfTheVM" | Select-Object CreationTime
+PowerShellCopy
+Get a list of the non-running and running highly available VMs and their creation time. To be used within a Hyper-V Cluster.
+Get-ClusterGroup | ? {$_.GroupType -eq 'VirtualMachine' } | Get-VM * | Select-Object VMName,CreationTime
+PowerShellCopy
+Thanks for reading my blog!
