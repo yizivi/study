@@ -1,0 +1,131 @@
+Vmware 升级系统
+https://www.qzkyl.cn/post-262.html教程
+Vmware -vl
+https://customerconnect.vmware.com/patch vmware update
+
+esxcli software sources profile list -d /vmfs/volumes/5cfda53b-2da14452-ff46-00e269124d28/ESXi670-201905001.zip
+esxcli software profile update -d /vmfs/volumes/5cfda53b-2da14452-ff46-00e269124d28/ESXi670-201905001.zip -p ESXi-6.7.0-20190504001-standard
+reboot
+
+VMware升级提示vib不兼容
+esxcli software vib get --vibname esx-vxlan
+esxcli software vib remove -n esx-vxlan
+win10安装VMware PowerCLI
+https://blog.csdn.net/weixin_38627000/article/details/122533432
+离线安装目录如下文件夹，安装在其它目录会提示找不到模块
+C:\Program Files\WindowsPowerShell\Modules
+老版本VMware PowerCLI安装教程)
+https://www.jb51.net/softs/609050.html
+powercli官方下载地址
+https://developer.vmware.com/web/tool/vmware-powercli/
+
+windows无法安装VMware tool
+https://www.cnblogs.com/liweis/p/16396543.html
+两个相关补丁KB4490628和KB4474419
+https://www.catalog.update.microsoft.com/search.aspx?q=4490628
+https://www.catalog.update.microsoft.com/search.aspx?q=kb4474419
+vmrun 批量创建vmware虚拟机
+https://www.cnblogs.com/keme/p/10025549.html
+
+Vcenter升级到VCSA提示ssl问题，安装lsdoctor进行修复
+"C:\Program Files\VMware\vCenter Server\python\python.exe" lsdoctor.py -t
+https://kb.vmware.com/s/article/80469
+
+Vcenter升级到VCSA vxpd服务无法启动，提示503错误，日志提示无法通过使用安全套接字层(SSL)加密与 SQL Server 建立安全连接。错误:“Unexpected rethrowing”
+在c:\programdata\vmware\vcenterserver\cfg\java\vmware-override-java.security
+c:\program files\vmware\vcenter server\jre\lib\security\java.security
+打开这个文件后找到以下配置信息
+jdk.tls.disabledAlgorithms=SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA,
+DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL,
+include jdk.disabled.namedCurves
+删除TLSv1和3DES_EDE_CBC两项，应该是java11的默认配置禁用这两种算法，删除后是启用它们，删除后的信息如下所示：
+jdk.tls.disabledAlgorithms=SSLv3, TLSv1.1, RC4, DES, MD5withRSA,
+DH keySize < 1024, EC keySize < 224, anon, NULL,
+include jdk.disabled.namedCurves
+
+启动所有vcenter服务
+c:\program files\vmware\vcenter server\bin
+service-control --start --all
+
+Vcenter server6.7升级到vcsa7.0时，到stage2 42%数据库导入时提示python编码错误
+运行migration-assistant进行precheck后，编辑如下文件
+c:\users\administrator\appdata\local\vmware\migration-assistant\pythonURExtractdir\PFiles\vmware\cis\cis_upgrade_runner\payload\component-scripts\vcdb\ms2pg\ms2sqlite.py
+1. 在 # paralle optimized version 上增加
+      # -*- coding: utf-8 -*-
+2. 修改
+     with open(file_path, 'w' buffering=CSVBUF) as fhd:
+  为with open(file_path, 'w' buffering=CSVBUF, encoding='utf-8') as fhd:
+3. 修改
+    field = str(f).encode().decode(FSENC)
+ 为field = str(f).encode()decode('utf-8')
+
+vcsa升级到stage2后报dns无法调置
+在第一阶佰开始迁移之前，源dns设置为网关IP地址，如1.1.3.254
+在第二阶段开始迁移之前修改/etc/hosts 文件名，增加如下一行
+1.1.3.202 localhost (其中1.1.3.202为源vcenter的IP地址，不是配置的临时IP）
+修改/etc/resolv.conf文件删除nameserver 1.1.3.254，只保留127.0.0.1那个
+vmware压缩vmdk文件大小
+linux
+cat /dev/zero > zero.fill;sync;sleep 1;sync;rm -f zero.fill  /usr/bin/vmware-toolbox-cmd disk shrinkonly
+至于原理，第一句是将硬盘空余地方全部填0，第二句是vmware的工具
+windows
+第一种：右键我的电脑->管理->存储->磁盘管理->右键任意磁盘->压缩卷->压缩
+第二种：vmware安装目录下，vmware-vdiskmanager.exe -k vmdk路径
+D:\VMware>vmware-vdiskmanager.exe -k  C:\Users\windows\Desktop\xxxx-disk1.vmdk
+https://www.cnblogs.com/kagari/p/12010147.html
+
+vmkfstools -K win10.vmdk 压缩未使用的空间
+https://www.zhihu.com/question/67464606/answer/2297582069
+如何使用 esxcli 手动移除并重新创建 vSAN 磁盘组
+运行以下命令，记录现有组中的缓存磁盘 ID 和容量磁盘 ID：
+esxcli vsan storage list
+然后移除磁盘组
+esxcli vsan storage remove -u <VSAN Disk Group UUID>
+https://kb.vmware.com/s/article/2150567?lang=zh_cn
+
+使用 ESXCLI 将闪存设备标记为容量设备
+esxcli storage core device list
+https://docs.vmware.com/cn/VMware-vSphere/7.0/com.vmware.vsphere.vsan-planning.doc/GUID-42E65085-1DA5-4C0B-A397-3497CBBC600E.html
+
+ESXI移除己卸载不可访问的数据存储
+正常卸载一块ESXi数据存储后，当删除的时候报错Not a known device:naa…，重新扫描存储后仍无法删除此时需要开启ESXI主机的SSH功能，使用命令列出永久分离的设备：
+
+要列出永久分离的设备，请运行以下命令：
+esxcli storage core device detached list
+会看到类似以下内容的输出：
+Device UID State
+naa.50060160c46036df50060160c46036df off
+naa.6006016094602800c8e3e1c5d3c8e011 off
+要从系统中永久移除设备配置信息，请运行以下命令：
+esxcli storage core device detached remove -d NAA_ID
+例如：
+esxcli storage core device detached remove -d naa.50060160c46036df50060160c46036df
+此时只需要在WEB上重新扫描存储，或SSH执行命令重新扫描存储即可：
+esxcli storage core adapter rescan --all
+https://kb.vmware.com/s/article/56994
+
+VMware虚拟机自定义规范充许linux运行自定义脚本
+1、安装10.1.0以上版本vmware-tool
+2、vmware-toolbox-cmd config get deployPkg enable-custom-scripts如果是unset的话需要:
+vmware-toolbox-cmd config set deployPkg enable-custom-scripts true
+3、虚拟机自定义规范中的自定义脚本代码
+#!/bin/sh
+if [ x$1 == x\"precustomization\" ]; then
+echo Do Precustomization tasks
+elif [ x$1 == x\"postcustomization\" ]; then
+echo Do Postcustomization tasks
+# 创建新的分区
+echo -e "n\np\n4\n\n\nw" | fdisk /dev/sda
+# 让内核重新读取分区表
+partprobe /dev/sda
+# 将新的磁盘空间添加到centos卷组
+vgextend centos /dev/sda3
+# 扩展/root逻辑卷
+lvextend -l +100%FREE /dev/centos/root
+# 调整文件系统大小以适应新的逻辑卷大小
+resize2fs /dev/centos/root
+fi
+
+使用 VMware Tools 配置文件
+tools.conf
+https://docs.vmware.com/cn/VMware-Tools/12.4.0/com.vmware.vsphere.vmwaretools.doc/GUID-EA16729B-43C9-4DF9-B780-9B358E71B4AB.html
