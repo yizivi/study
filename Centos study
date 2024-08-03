@@ -1,0 +1,240 @@
+Linux 使用ps命令查看某个进程文件的启动位置
+https://blog.csdn.net/qingfengxd1/article/details/103718417
+https://blog.csdn.net/qq_37168856/article/details/105094559
+
+ps auxf
+Netstat -antp | grep pid
+
+步骤：
+1、ps -ef |grep dockerd 发现sudo dockerd进程号为30995
+2、进入/proc/30995
+
+1、首先使用ps -ef找到程序进程号
+2、在proc下找到对应的进程信息
+
+查看端口被什么程序占用lsof -i:8090
+Lsof    ( lsof -c process)(lsof -p pid)                                   
+https://blog.csdn.net/qq_36462472/article/details/84109534
+
+备份
+http://www.dell.com/support/home/cn/zh/cndhs1?c=cn&l=zh&s=dhs
+http://lieven.blog.51cto.com/8328610/1638834   veeam备份方式
+
+
+netsh interface ip set address "本地连接" static 192.168.0.110 255.255.255.0 192.168.0.1 1
+set address name="本地连接" gateway=192.168.1.1 gwmetric=1
+netsh interface ip set dns "本地连接" static 114.114.114.114 register=PRIMARY
+add dns name="本地连接" addr=192.168.0.2 index=2
+netsh interface ip set address name="本地连接" sourse=dhcp
+
+acl
+http://wenku.baidu.com/link?url=VOkfdfvCrLIU6a8dUaORSWQQdCVTXCpKMHdPj6Ey0CeJRgGLQP3Pmj3uK2w2k_FMnb-L1eOBE2nLgTOBiDpwpsDF8BB5LzMYCICADdlCE27
+
+查看系统用户组和登录日志
+Who whoami last lastlog
+cat /etc/group   
+cat /etc/passwd|grep -v nologin|grep -v halt|grep -v shutdown|awk -F":" '{ print $1"|"$3"|"$4 }'|more
+cat /etc/login.defs 检查login.defs文件的uid值，判断uid的passwd来获取最近新建的管理员账户
+
+来自 <https://cloud.tencent.com/developer/article/1447005> 
+
+http://www.ruijie.com.cn/fw/qdwd/81941/
+sh ip fpm pri 10 | inc 39.100.177.32 （ip地址可以变）
+show ip f pri 22 | Inc192.168.3.10
+
+更改用户和用户组的文件文件夹所有人
+chown -R apache:apache /opt/flarum/storage
+
+nmap  -oG - -p 3389 192.168.30.3 | grep -E "closed|down";nmap  -oG - -p 5900 192.168.50.130 | grep -E "closed|down"
+
+查看 Linux ssh 登陆审计日志。
+Centos 与 RedHat 审计日志路径为 /var/log/secure，Ubuntu 与 Debian 审计日志路径为 /var/log/auth.log
+
+takeown /F M:\windows\ /a /r /d y & icacls M:\windows\  /T /C /grant users:(F,WDAC) /inheritance:e
+
+更换Centos yum源
+mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
+wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo
+
+腾讯源
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos8_base.repo
+
+#注释Failovermethod
+sed -i 's/failovermethod/#failovermethod/g' /etc/yum.repos.d/CentOS-*.repo
+
+解决Centos8 yum源无法同步下载更新软件问题
+cd /etc/yum.repos.d
+sed -i 's/$releasever/8-stream/' CentOS-*.repo
+
+ 更换阿里备份源
+minorver=8.5.2111
+sudo sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+         -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=https://mirrors.aliyun.com/centos-vault/$minorver|g" \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo
+		 
+更换163备份源		 
+minorver=8.5.2111
+sudo sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+         -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=https://mirrors.163.com/centos-vault/$minorver|g" \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo
+		 
+更换华为备份源		 
+minorver=8.5.2111
+sudo sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+         -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=https://repo.huaweicloud.com/centos-vault/$minorver|g" \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo		 
+		 
+更换华为8-stream源	
+sudo sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+         -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=https://repo.huaweicloud.com/centos/8-stream/|g" \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo
+		 
+更换中科大8-stream源	
+sudo sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+         -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=https://mirrors.ustc.edu.cn/centos/8-stream/|g" \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo	
+
+更换清华大学备份源
+minorver=8.5.2111sudo sed -e "s|^mirrorlist=|#mirrorlist=|g" \         -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=https://mirrors.tuna.tsinghua.edu.cn/centos-vault/$minorver|g" \         -i.bak \         /etc/yum.repos.d/CentOS-*.repo
+
+CentOS批量重命名
+ rename repo.bak repo  *.repo.bak
+
+Centos查看模块流版本
+dnf module list redis 
+
+Centos安装php7.4或更高版本
+dnf module  reset php
+dnf module install php:7.4 
+
+查找删除文件
+find / -name Filename
+find /etc/yum.repos.d/ -name "*epel*" | xargs rm -f
+
+“Argument list too long”这个问题的解决主要会用到两个命令，find和xargs
+
+find ROOT/ -name "*.png" -exec rm {} \;
+https://www.jianshu.com/p/d685f934fbd4
+
+显示文件所在的Linux路径
+whereis pnscan 和  whereis crypto 
+
+改名文件属性chattr  查看文件属性lasttr
+把这三个权限置为000（不可读不可改不可执行 注意：使用root权限）
+假如发现Operation not permitted
+
+CentOS NTP服务问题
+在 CentOS 8 中，执行下面的命令，来让服务进程随开机自动启动。
+systemctl enable chronyd
+
+请执行下面的命令，确定 NTP 服务器的地址已经配置成功了。
+chronyc sources 上面命令会显示默认配置的 NTP 服务器地址
+
+强制同步
+在安装操作系统后，可能会遇到时间不准确的情况。
+可以使用下面的命令对服务器的世界进行强制同步一次。
+chronyc -a makestep
+https://www.cnblogs.com/my-show-time/p/14658895.html
+
+更改时区
+ timedatectl set-timezone Asia/Shanghai
+ sudo ntpdate cn.pool.ntp.org
+
+来自 <https://blog.csdn.net/huyuchengus/article/details/108943186> 
+
+Docker 批量操作容器
+
+一键安装docker
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+
+docker中 启动所有的容器命令
+docker start $(docker ps -a | awk '{ print $1}' | tail -n +2)
+docker中 关闭所有的容器命令
+docker stop $(docker ps -a | awk '{ print $1}' | tail -n +2)
+docker中 删除所有的容器命令
+docker rm $(docker ps -a | awk '{ print $1}' | tail -n +2)
+docker中 删除所有的镜像
+docker rmi $(docker images | awk '{print $3}' |tail -n +2)
+
+stat命令
+stat命令用于查看文件的具体存储细节和时间等信息
+
+history查询的到，有没有使用wget命令下载木马
+
+查看文件文件夹大小
+du -sh : 查看当前目录总共占的容量。而不单独列出各子项占用的容量 
+du -lh --max-depth=1 : 查看当前目录下一级子文件和子目录占用的磁盘容量。
+du -sh * | sort -n 统计当前文件夹(目录)大小，并按文件大小排序
+
+过滤掉开头字母为非英文字母的行
+grep -n '^'[[a-Z] /etc/sysconfig/jenkins
+
+firewall-cmd使用--remove-rich-rule删除rich-rule规则
+https://www.jianshu.com/p/9ea91283ce49
+
+查看防火墙某个端口是否开放
+firewall-cmd --query-port=3306/tcp
+
+开放防火墙端口3306
+注意：开放端口后要重启防火墙生效
+firewall-cmd --add-port=3306/tcp --permanent
+
+重启防火墙
+systemctl restart firewalld
+
+开放一段端口
+firewall-cmd --add-port=40000-45000/tcp --permanent
+
+查看开放的端口列表
+firewall-cmd --list-ports
+
+查看被监听(Listen)的端口
+netstat -lntp
+
+检查端口被哪个进程占用
+netstat -lnp|grep 3306
+
+Ubantu 删除PPA
+sudo add-apt-repository -r ppa:ehoover/compholio
+
+nmcli
+
+查看路由表
+Netstat -r
+Route -n 
+Ip route
+
+CentOS查看己启动的服务
+查看已启动的服务列表：systemctl list-unit-files|grep enabled
+查看启动失败的服务列表：systemctl --failed
+
+ifdown eth0 禁用网卡
+ ifup eth0 启用网卡
+
+chkconfig 命令查看开机服务器启动情况
+systemctl status pid
+cd /proc/
+cd pid 
+
+首先在/etc/sysconfig/crotnab中的定时任务没有找到定时脚本，输入crontab -e 在其中找到了该定时任务
+
+查询命令变化
+Wathc -n 3
+
+注意：
+cwd符号链接的是进程运行目录；
+exe符号连接就是执行程序的绝对路径；
+cmdline就是程序运行时输入的命令行命令；
+environ记录了进程运行时的环境变量；
+fd目录下是进程打开或使用的文件的符号连接。
+
+linux己删除文件恢复
+当服务进程停止(文件句柄的引用计数会变为0)或者重启后，占用的存储空间才被释放。如果不知道具体进程或文件名的话：lsof | grep deleted，这样会查找所有被删除的但是文件句柄没有释放的文件和相应的进程
+
+phpMyAdmin安装图文教程
+https://zhuanlan.zhihu.com/p/437122814
