@@ -1,0 +1,2 @@
+# yum -y install redhat-lsb libXScrnSaver
+# yum -y localinstall google-chrome-stable_current_x86_64.rpm
