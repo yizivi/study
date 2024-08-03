@@ -1,0 +1,31 @@
+Fdidk /dev/sda
+N
+P
+3
+回车
+回车
+T
+3
+8e
+W
+Reboot(重启电脑)
+fdisk -l
+查看当前分区的类型
+mkfs.ext4 /dev/sda3 
+
+pvcreate /dev/sda3
+查看pv状态
+#pvdisplay
+查看vg状态
+#vgdisplay
+刚创建的PV加入相应的VG
+#vgextend vg_centos /dev/sda3 说明：vg_centos是我的服务器vg名称，
+
+Lvextend -l +51199 /dev/c1/home
+
+
+Df -h
+
+Xfs_growfs /dev/mapper/cl-home
+
+
