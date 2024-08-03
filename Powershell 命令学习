@@ -1,0 +1,68 @@
+我们可以通过下面的命令查看 WinRM 服务的状态：
+1	Get-Service WinRM
+用管理员权限启动 PowerShell，执行下面的命令：
+1	Enable-PSRemoting –Forc
+然后再检查 WinRM 服务就应该是运行状态
+Get-service winrm
+如果你的计算机已经加入了域，那么上面的配置就可以了。对于没有加入域的计算机还需要进行信任设置，然后重启 WinRM 服务：
+Set-Item wsman:\localhost\client\trustedhosts *
+Restart-Service WinRM
+PowerShell 还提供了一个命令用来测试远程主机是否开启了远程操作服务：
+Test-WsMan xxx.xxx.xxx.xxx
+提示客户端无法连接的话，运行
+winrm quickconfig
+创建远程连接 Session
+这种方式类似于 SSH 的远程连接。使用 SSH 客户端建立一个到服务器的连接(session)，然后执行各种操作。这是 SSH 最基本的使用方式，PowerShell 也提供了类似的支持让我们可以做同样的事情。
+Enter-PSSession -ComputerName 客户端计算机名 -Credential username
+自动化脚本
+$Username= '*********'
+$PWD= '********'
+$pass= ConvertTo-SecureString -AsPlainText $PWD-Force
+$Cred= New-Object System.Management.Automation.PSCredential -ArgumentList $Username,
+Invoke-Command -ComputerName 10.112.20.84 -ScriptBlock { iisreset } -credential $Cred
+
+来自 <https://www.cnblogs.com/wanghao4023030/p/11151099.html> 
+
+
+远程执行脚本
+Invoke-Command -ComputerName Server01, Server02 -FilePath c:\Scripts\DiskCollect.ps1
+远程执行多个命令
+有时候我们需要连续执行多个有关联的命令，比如后一条命令会用到前一条命令的结果。此时再使用上面的方法就不行了。需要通过 session 来处理命令之间的联系：
+1
+2
+3
+4
+5
+6	Invoke-Command-ComputerName myserver -ScriptBlock {$p = Get-Process PowerShell}
+Invoke-Command-ComputerName myserver -ScriptBlock {$p.VirtualMemorySize}
+
+$s = New-PSSession-ComputerName myserver
+Invoke-Command-Session$s-ScriptBlock {$p = Get-Process PowerShell}
+Invoke-Command-Session$s-ScriptBlock {$p.VirtualMemorySize}
+
+来自 <https://www.jb51.net/article/131532.htm> 
+如果目标主机很多，还可以把它们写到文件中，然后通过下面的方式引用：
+1	Invoke-Command-ComputerName (Get-Content Machines.txt)
+远程拷贝文件
+终于，PowerShell 在 5.x 的版本中开始支持远程拷贝文件了！先来看 demo：
+1
+2	$mySession = new-PSSession-ComputerName xxxxxx
+Copy-Item-Path .\task.ps1 -Destination C:\task.ps1 -ToSession$mySession
+上面的命令把本地当前目录下的 task.ps1 文件拷贝到远程主机 xxxxxx 的 C 盘根目录下。注意 Copy-Item 命令使用了一个 Session 对象作为参数，这个参数的名称为 ToSession。我们可以猜测，文件传递的方向就是由这个参数决定的：使用 ToSession 会把本地的文件传递到远程主机；使用 FromSession 则会把远程主机上的文件传递到本机。
+再看一下如何拷贝整个目录：
+1
+2	$mySession = new-PSSession-ComputerName xxxxxx
+Copy-Item-Path .\PowerShell -Destination C:\PowerShell -ToSession$mySession-Recurse
+
+注意目录拷贝操作要加上 Recurse 参数。
+上面的两个操作分别是把一个文件和一个目录拷贝到远程的主机上，接下来我们要把远程主机上的文件或文件夹拷贝到本机来：
+1
+2
+3	$mySession = new-PSSession-ComputerName xxxxxx
+Copy-Item-Path C:\task.ps1 -Destination F:\temp\task.ps1 -FromSession$mySession
+Copy-Item-Path C:\PowerShell -Destination F:\temp -FromSession$mySession-Recurse
+注意这里使用的参数是 FromSession，所以命令中的 Destination 指定的是本地路径。执行上面的命令，看看是不是已经把内容拷贝到本地的 F:\temp 目录下了！
+
+来自 <https://www.jb51.net/article/131532.htm> 
+
+
