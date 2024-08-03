@@ -1,0 +1,8 @@
+ssh-keygen -f /root/.ssh/id_rsa -N ""
+for i in  128 129 130
+do
+sshpass -pPassword ssh-copy-id -o StrictHostKeyChecking=no -i /root/.sshid_rsa.pub root@192.168.200.$i
+done
+
+/etc/ansible/host
+nokey ansible_ssh_host=192.168.220.130 ansible_ssh_port=22 ansible_ssh_user=root ansible_ssh_pass='Password'
