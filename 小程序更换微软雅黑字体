@@ -1,0 +1,53 @@
+docker ps
+docker cp /usr/share/fonts/MSYH.TTF 7d8ce3a3cb64:/usr/share/fonts
+docker cp /usr/share/fonts/msyh.ttc 7d8ce3a3cb64:/usr/share/fonts
+docker cp /usr/share/fonts/msyhl.ttc 7d8ce3a3cb64:/usr/share/fonts
+docker cp /usr/share/fonts/msyhbd.ttc 7d8ce3a3cb64:/usr/share/fonts
+docker exec -it 7d8ce3a3cb64 /bin/bash
+
+mkdir  /acs/user/jdk/jre/lib/fonts/fallback/
+cp /usr/share/fonts/MSYH.TTF  /acs/user/jdk/jre/lib/fonts/fallback/
+cp /usr/share/fonts/msyh.ttc  /acs/user/jdk/jre/lib/fonts/fallback/
+cp /usr/share/fonts/msyhbd.ttc  /acs/user/jdk/jre/lib/fonts/fallback/
+cp /usr/share/fonts/msyhl.ttc  /acs/user/jdk/jre/lib/fonts/fallback/
+cd /acs/user/jdk/jre/lib/fonts/fallback
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+rm /etc/yum.repos.d/CentOS-Base.repo
+y
+yum clean all 
+yum makecache
+yum update
+yum -y install fontconfig
+yum -y install mkfontscale
+yum -y install ttmkfdir
+mkfontscale
+mkfontdir
+mkfontscale
+fc-cache
+cd /usr/share/fonts/
+mkfontscale
+mkfontdir
+mkfontscale
+fc-cache -fv
+
+[root@localhost ~]# yum groupinstall "fonts"
+Locale -a
+vi /etc/locale.conf
+en_US.utf8
+zh_CN.utf8
+Source /etc/locale.conf
+
+yum install glibc-common
+yum install -y langpacks-zh_CN
+yum install kde-l10n-Chinese
+
+
+
+
+
+
+
+
+
+ln -s /usr/share/fonts- MSYH.TTF
+ln -s /usr/share/fonts/dejavu/MSYH.TTF MSYH.TTF
