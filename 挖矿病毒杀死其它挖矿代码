@@ -1,0 +1,28 @@
+kill_miner_proc(){# ps获取运行的进程，grep屏蔽掉自己，然后grep其它挖矿程序，awk获取进程编号，kill -9强制杀掉
+    # 如果大家看到自己电脑有这些程序，也都清除下，都是病毒
+    # 源代码有近百个病毒进程的清除，这里只列一部分
+ps auxf|grep -v grep|grep "mine.moneropool.com"|awk '{print $2}'|xargs kill -9
+ps auxf|grep -v grep|grep "pool.t00ls.ru"|awk '{print $2}'|xargs kill -9
+ps auxf|grep -v grep|grep "xmr.crypto-pool.fr:8080"|awk '{print $2}'|xargs kill -9
+ps auxf|grep -v grep|grep "/tmp/a7b104c270"|awk '{print $2}'|xargs kill -9
+ps auxf|grep -v grep|grep "xmrpool.eu"|awk '{print $2}'|xargs kill -9
+ps auxf|grep xiaoyao|awk '{print $2}'|xargs kill -9
+ps auxf|grep xiaoxue|awk '{print $2}'|xargs kill -9
+ps ax|grep var|grep lib|grep jenkins|grep -v httpPort|grep -v headless|grep "\-c"|xargskill -9
+ps ax|grep -o './[0-9]* -c'|xargs pkill -f
+    pkill -f biosetjenkins
+    pkill -f irqba5xnc1
+    pkill -f irqbnc1
+    pkill -f ir29xc1
+    pkill -f conns
+    pkill -f irqbalance
+    pkill -f crypto-pool
+    pkill -f minexmr
+    pkill -f XJnRj
+    pkill -f mgwsl
+    pkill -f pythno
+crontab -r
+    rm -rf /var/spool/cron/*
+}
+
+来自 <https://cloud.tencent.com/developer/article/1461835> 
