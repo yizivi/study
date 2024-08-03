@@ -39,6 +39,10 @@ $wwnInfo | Export-Csv -Path "d:\output.csv" -NoTypeInformation
 $csvPath = "wwninfo.csv"
 $wwnInfo | Export-Csv -Path $csvPath -NoTypeInformation
 
+
+
+
+###获取指定集群的esxi主机的WWN号
 # 安装 PowerCLI 模块（如果尚未安装）
 # Install-Module -Name VMware.PowerCLI -Scope CurrentUser
 
