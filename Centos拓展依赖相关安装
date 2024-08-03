@@ -1,0 +1,45 @@
+			
+	国内Go Module代理仓库服务
+#go env 设置(跨平台)
+go env -w GO111MODULE=on
+go env -w GOPROXY=https://goproxy.cn
+
+GoProxy.io
+https://goproxy.io/zh/
+
+七牛
+https://goproxy.cn/
+开源，支持自建
+
+阿里云
+https://mirrors.aliyun.com/goproxy/
+
+来自 <https://zhuanlan.zhihu.com/p/352552509> 		Docker 安装设置阿里镜像源
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+
+来自 <https://www.runoob.com/docker/centos-docker-install.html> 
+		
+Compose V1
+1、sudo curl -L"https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)"-o/usr/local/bin/docker-compose
+2、sudo chmod +x /usr/local/bin/docker-compose
+
+3、sudo ln -s/usr/local/bin/docker-compose /usr/bin/docker-compose
+
+4、docker-compose --version
+
+来自 <https://docs.docker.com/compose/install/> 
+Compose V2
+1、DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker} $mkdir -p$DOCKER_CONFIG/cli-plugins
+ $curl -SLhttps://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o$DOCKER_CONFIG/cli-plugins/docker-compose
+2、chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+3、 docker compose version
+
+来自 <https://docs.docker.com/compose/cli-command/#install-on-linux> 
+
+Compose Switch
+
+curl -fLhttps://raw.githubusercontent.com/docker/compose-switch/master/install_on_linux.sh | sh
+
+来自 <https://docs.docker.com/compose/cli-command/#install-on-linux> 
+
+
