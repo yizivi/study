@@ -1,0 +1,22 @@
+问题
+ubuntu18.04LTS搭建k8s coredns组件报错
+因为/etc/resolve.conf中存在 nameserver 127.0.0.53回环地址造成循环引用
+手动修改无果，每次重启依旧会覆盖
+
+原因
+ubuntu17.0之后特有，systemd-resolvd服务会一直覆盖
+
+解决办法
+sudo systemctl stop systemd-resolved
+sudo systemctl disable systemd-resolved
+sudo apt install unbound
+sudo rm -rf /etc/resolv.conf
+sudo vim  /etc/NetworkManager/NetworkManager.conf
+
+在[main]
+下面添加
+dns=unbound
+将dns服务替换为unbound
+reboot
+重启电脑即可，开机查看resolve.conf发现nameserver自动配置
+————————————————
