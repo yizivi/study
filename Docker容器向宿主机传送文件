@@ -1,0 +1,20 @@
+Docker容器向宿主机传送文件
+格式:
+docker cp container_id:<docker容器内的路径><本地保存文件的路径>
+比如:
+Dockercp 10704c9eb7bb:/root/test.text /home/vagrant/test.txt
+宿主机向Docker容器传送文件
+格式:
+docker cp 本地文件的路径 container_id:<docker容器内的路径>
+比如:
+dockercp  /home/vagrant/test.txt 10704c9eb7bb:/root/test.text
+其它
+在宿主机(本机)中通过docker cp --help 查看 docker cp的用法
+vagrant@centos:~$docker cp--helpUsage:        docker cp[OPTIONS] CONTAINER:SRC_PATH DEST_PATH|-
+docker cp[OPTIONS] SRC_PATH|- CONTAINER:DEST_PATH
+Copyfiles/folders between a container and the local filesystem
+Options:
+  -a, --archiveArchive mode (copyall uid/gid information)
+  -L, --follow-linkAlways follow symbol link inSRC_PATH
+
+来自 <https://www.cnblogs.com/fsong/p/11335251.html> 
