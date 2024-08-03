@@ -1,0 +1,9 @@
+
+执行命令
+kubectl -n <namespace> exec -it <POD> -c <CONTAINER> -- <COMMAND>
+1
+进入shell
+kubectl -n <namespace> exec -it <POD> -c <CONTAINER> -- /bin/sh
+1
+退出
+exit
