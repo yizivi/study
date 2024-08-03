@@ -1,0 +1,82 @@
+# 连接到 vCenter Server
+Connect-VIServer -Server <vCenter_Server> -User <Username> -Password <Password>
+
+# 获取 vCSA 集群
+$clusters = Get-Cluster
+
+# 创建一个空数组来存储结果
+$wwnInfo = @()
+
+# 循环遍历每个集群
+foreach ($cluster in $clusters) {
+    # 获取集群中的 ESXi 主机
+    $esxiHosts = Get-VMHost -Location $cluster
+
+    # 循环遍历每个 ESXi 主机
+    foreach ($esxiHost in $esxiHosts) {
+        # 获取主机的 HBA 信息
+        $hbaInfo = Get-VMHostHba -VMHost $esxiHost -Type FibreChannel | Select-Object -Property VMHost, Device, @{N="node";E="{0:X}" -f $_.NodeWorldWideName}}, @{N="port";E="{0:X}" -f $_.PortWorldWideName}}
+
+        # 循环遍历每个 HBA 信息
+        foreach ($hba in $hbaInfo) {
+            # 创建一个自定义对象来存储主机、集群和 WWN 信息
+            $obj = [PSCustomObject]@{
+                "Cluster" = $cluster.Name
+                "ESXiHost" = $hba.VMHost
+                "NWWN" = $hba.node
+                "WWN" = $hba.port
+            }
+
+            # 将自定义对象添加到结果数组中
+            $wwnInfo += $obj
+        }
+    }
+}
+
+# 导出结果到 CSV 文件
+$wwnInfo | Export-Csv -Path "d:\output.csv" -NoTypeInformation
+或者
+$csvPath = "wwninfo.csv"
+$wwnInfo | Export-Csv -Path $csvPath -NoTypeInformation
+
+# 安装 PowerCLI 模块（如果尚未安装）
+# Install-Module -Name VMware.PowerCLI -Scope CurrentUser
+
+# 导入 PowerCLI 模块
+Import-Module VMware.PowerCLI
+
+# 连接到 VCSA
+$vcServer = "vcenter.example.com"
+$vcUsername = "administrator@vsphere.local"
+$vcPassword = "YourPassword"
+Connect-VIServer -Server $vcServer -Username $vcUsername -Password $vcPassword
+
+# 定义集群名称
+$clusterName = "YourClusterName"
+
+# 获取集群中的 ESXi 主机
+$esxiHosts = Get-Cluster -Name $clusterName | Get-VMHost
+
+# 创建一个空的数组来存储结果
+$result = @()
+
+# 循环遍历每个 ESXi 主机
+    foreach ($esxiHost in $esxiHosts) {
+        # 获取主机的 HBA 信息
+        $hbaInfo = Get-VMHostHba -VMHost $esxiHost -Type FibreChannel | Select-Object -Property VMHost, Device, @{N="node";E="{0:X}" -f $_.NodeWorldWideName}}, @{N="port";E="{0:X}" -f $_.PortWorldWideName}}
+
+        # 循环遍历每个 HBA 信息
+        foreach ($hba in $hbaInfo) {
+            # 创建一个自定义对象来存储主机、集群和 WWN 信息
+            $obj = [PSCustomObject]@{
+                "Cluster" = $cluster.Name
+                "ESXiHost" = $hba.VMHost
+                "NWWN" = $hba.node
+                "WWN" = $hba.port
+}
+
+# 断开与 VCSA 的连接
+Disconnect-VIServer -Server $vcServer -Confirm:$false
+
+# 将结果导出到 CSV 文件
+$result | Export-Csv -Path "C:\Path\To\Export.csv" -NoTypeInformation
