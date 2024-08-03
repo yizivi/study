@@ -1,0 +1,26 @@
+
+netstat -tp
+
+]# nmcli device show
+
+2、查看所有网卡的连接状态信息
+
+]# nmcli device status
+
+3、查看所有服务于网卡接口的连接，connection指一组关于网卡的配置信息，对于一个单一的网卡设备可以有多个连接，并且可以在多个连接之间切换，但一个网卡接口一次只能对应一个连接生效
+
+]# nmcli connection show
+
+4、查看所有活动的连接，即对应网卡生效的连接
+
+]# nmcli connection show --active
+
+5、添加一个新的连接并绑定网卡，添加完之后会在/etc/sysconfig/network-scripts目录下自动生成一个网卡的配置文件（如下，新建一个名为test的连接，并绑定网卡eno33554984）
+
+]# nmcli connection add con-name test type ethernet ifname eno33554984 
+
+con-name：需要指定连接名
+
+type：需要指定网卡的类型，如 bond、adsl、team、ethernet等
+
+ifname：需要指定要绑定的网卡接口
