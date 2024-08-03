@@ -1,0 +1,45 @@
+如何在 CentOS 中安装 PHP 7.4
+2022年1月12日
+14:15
+步骤一：添加 EPEL 和 REMI 库
+安装需要 EPEL 和 REMI 库。通过以下命令将其添加到系统中
+sudo yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo yum -y install https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+
+步骤二：在 CentOS 8 / RHEL 8 上安装 PHP 7.4
+添加相关的库后，启用 PHP 7.4 的 Remi 模块并进行安装。
+sudo dnf -y install dnf-utils
+启用 PHP 7.4 的模块流
+sudo dnf module install php:remi-7.4
+
+使用如下命令安装额外的包
+sudo dnf update
+sudo yum install php-xxx
+
+查看已启用的模块：
+$ php --modules
+
+php安装mcrypt拓展
+1、yum install php-devel
+2、pecl install mcrypt1.0.4
+3、在php.ini加上扩展即可
+Vi /etc/php.ini 
+extension=mcrypt.so
+
+apache启用php
+
+yum -y install libxml2
+yum -y install libxml2-devel
+yum -y install sqlite-devel
+
+载入PHP模块，如httpd.conf中有下列代码则直接去掉前面#即可，没有则加入
+LoadModule php7_module modules/libphp7.so
+
+在底部加入以下代码使得Apache可以解析php文件
+<IfModule mod_php7.c>
+AddType application/x-httpd-php .php
+</IfModule>
+
+
+
+
