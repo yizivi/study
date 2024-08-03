@@ -1,0 +1,54 @@
+# 指定 CSV 文件路径
+$csvPath = "C:\路径\至\虚拟机列表.csv"  # 替换为实际的 CSV 文件路径
+
+# 加载 CSV 文件
+$vmList = Import-Csv -Path $csvPath
+
+
+###powershell对虚拟机进行批量关机
+# 指定 CSV 文件路径
+$csvPath = "C:\路径\至\虚拟机列表.csv"  # 替换为实际的 CSV 文件路径
+
+# 加载 CSV 文件
+$vmList = Import-Csv -Path $csvPath
+
+# 连接到 vCenter Server Appliance
+Connect-VIServer -Server <vCenter_Server> -User <username> -Password <password>
+
+# 遍历虚拟机列表并执行操作
+foreach ($vm in $vmList) {
+    $vmName = $vm.VMName
+    $vmObject = Get-VM -Name $vmName
+
+    # 在这里进行你需要的操作
+    # 例如，关闭虚拟机
+    if ($vmObject -and $vmObject.PowerState -eq "PoweredOn") {
+        Stop-VM -VM $vmObject -Confirm:$false
+    }
+}
+
+# 断开与 vCenter Server Appliance 的连接
+Disconnect-VIServer -Server <vCenter_Server> -Confirm:$false
+
+
+
+###powershell对虚拟机进行批量开机
+# 指定CSV文档路径
+$csvPath = "C:\路径\至\虚拟机列表.csv"  # 替换为实际的CSV文档路径
+
+# 从CSV文档中读取虚拟机名称列表
+$vmList = Import-Csv -Path $csvPath | Select-Object -ExpandProperty VMName
+
+# 连接到 vCenter Server Appliance
+Connect-VIServer -Server <vCenter_Server> -User <username> -Password <password>
+
+# 遍历虚拟机列表并执行开机操作
+foreach ($vmName in $vmList) {
+    $vm = Get-VM -Name $vmName
+    if ($vm -and $vm.PowerState -eq "PoweredOff") {
+        Start-VM -VM $vm -Confirm:$false
+    }
+}
+
+# 断开与 vCenter Server Appliance 的连接
+Disconnect-VIServer -Server <vCenter_Server> -Confirm:$false
