@@ -1,0 +1,6 @@
+默认情况下，VCSA 6.5 使用的是 CSHELL，无法通过 SFTP 工具上传和下载文件。但你可以将默认的 CSHELL 改成 BASH SHELL 来实现文件上传。以下是具体步骤：
+
+使用 root 用户登录到 VCSA 6.5 的命令行界面。
+在命令界面输入 shell 进入 shell 模式。
+输入命令 chsh -s /bin/bash root，切换至 bash。
+输入命令 chsh -s /bin/appliancesh，再次还原至 CSHELL。
