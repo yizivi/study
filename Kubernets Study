@@ -1,0 +1,101 @@
+查看集群状态信息
+kubectl cluster-info 
+来自 https://www.jianshu.com/p/11b7065d4c38
+
+可通过该命令查看 Pod 在节点上的资源分配情况（Request、Limits）
+kubectl describe node
+kubectl describe pod -n ldy-prod
+
+查看nodes
+kubectl get nodes
+
+明明有pod，但是无法查看详细信息
+必须得指定namespace，因为系统中存在多个namespace
+
+kubectl describe pods/easy-support-prod-group-1-7-bfc58b969-4zhp6 --namespace ldy-prod
+
+查看所有节点node 上运行的所有 pods的状态
+kubectl get pod -n ldy-prod -o wide
+来自 https://blog.csdn.net/yangchao1125/article/details/113243688
+
+单机查看指定命名空间pod的状态
+kubectl get pods -n  ldy-prod（kube-system)
+
+拷贝中文字体文件到对应服务的pod中
+kubectl cp msyh.ttf pod_name:/usr/share/fonts/win/msyh.ttc
+
+查看Pod里业务容器的命令
+kubectl get pods myapp-pod -o jsonpath={.spec.containers[*].name}
+
+查看命名空间
+kubectl get namespace
+kubectl get all --namespace
+
+来自 http://t.zoukankan.com/zyxnhr-p-12182513.html
+
+kubeadm init初始化提示runtime error
+rm -rf /etc/containerd/config.toml
+systemctl restart containerd
+https://github.com/containerd/containerd/issues/4581
+
+创建token
+kubeadm token create --print-join-command
+
+K8 初始化报错
+Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests
+k8s 已经弃用了docker了，如果安装的kubelet   kubeadm  kubectl
+是V1.24就会出现以上错误，安装的时候指定一下1.23版本，就可以解决了：yum install -y kubelet-1.23.6 kubeadm-1.23.6 kubectl-1.23.6
+
+Kubeadm init初始化提示Error getting node" err="node \"*\" not found
+https://blog.csdn.net/ALEX_CYL/article/details/125227396
+
+kubernetes1.24版本之后的安装步骤
+https://www.jianshu.com/p/a167b80c89b8
+配置cri-docker使kubernetes1.24以docker作为运行时
+https://blog.csdn.net/lduan_001/article/details/125198823
+
+kubeadm init --image-repository=registry.aliyuncs.com/google_containers
+
+安装docker
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+
+问题：/proc/sys/net/bridge/bridge-nf-call-iptables does not exist
+modprobe br_netfilter
+echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+更改kuberneter配置环境(kubectl get nodes提示8080端口权限问题）
+ https://blog.csdn.net/CEVERY/article/details/108753379
+方式一：编辑文件设置
+vim /etc/profile	   
+在底部增加新的环境变量 export 
+KUBECONFIG=/etc/kubernetes/kubelet.conf
+方式二:直接追加文件内容
+echo "export KUBECONFIG=/etc/kubernetes/kubelet.conf" >> /etc/profile
+步骤二：使生效	
+source /etc/profile
+
+K8s安装之后status not ready 需要安装网络 calico
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml 
+安装部署deploy之后pod一直处于Pending状态
+
+kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
+
+给角色role打标签
+kubectl label node PCname kubernetes.io/role=node
+
+kubectl expose deployment nginx --port=80 --target-port=80 --type=NodePort
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/baremetal/deploy.yaml
+dashboard
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+access Dashboard at:
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/.
+ingress镜像下载加速
+https://dockerproxy.com/docs
+vi deploy 把image中的 k8s.gcr.io替换成k8s.dockerproxy.com
+
+谷歌镜像更改成阿里云
+k8s.gcr.io>>http://registry.cn-hangzhou.aliyuncs.com/google_containers
+
