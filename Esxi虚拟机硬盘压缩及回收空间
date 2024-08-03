@@ -1,0 +1,10 @@
+Esxi虚拟机硬盘压缩及回收空间
+https://zhuanlan.zhihu.com/p/453176632
+
+虚拟机磁盘空间回收
+sdelete64.exe -z c: 对 C 盘剩余空间写零，适合虚拟磁盘优化
+https://download.sysinternals.com/files/SDelete.zip
+https://zhuanlan.zhihu.com/p/453176632
+windows:sdelete -z x:
+linux:dd if=/dev/zero bs=1048576 of=/zero ; sync ; rm /zero
+vmkfstools -K /vmfs/volumes/volumename/vmname/vmname.vmdk
