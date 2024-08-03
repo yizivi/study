@@ -1,0 +1,28 @@
+apache启用rewrite_module
+
+
+1：开启apache的url_rewrite模块，在httpd.conf中去掉这句话的注释LoadModulerewrite_module modules/mod_rewrite.so。（这句话默认情况下是注释的，前面有#）
+2：找到AllowOverride，把AllowOverride None修改成AllowOverride all（这个至观重要，不做这个设置的话就算做了其它的操作，也是无效的）。另外这个地方文件里面有好几个地方有这个参数，如果不懂的话就全部改掉。
+3：在所需要进行rewrite的web的主目录下添加.htaccess文件，添加上一句话：RewriteEngine on。在.htaccess下补充个人的重写规则即可（一般都有这个文件，只要添加上面那句就可以了）。
+步骤2是很重要，这个配置的含义就是让apache去
+读取对应的配置文件，.htaccess属于配置文件之一，如果设置成为了None就不让读取了就无效了。
+
+来自 <https://www.cnblogs.com/lxwphp/p/7731440.html> 
+
+
+# Dynamic Shared Object (DSO) Support
+#
+# To be able to use the functionality of a module which was built as a DSO you
+# have to place corresponding `LoadModule' lines at this location so the
+# directives contained in it are actually available _before_ they are used.
+# Statically compiled modules (those listed by `httpd -l') do not need
+# to be loaded here.
+#
+# Example:
+# LoadModule foo_module modules/mod_foo.so
+#
+LoadModule rewrite_module modules/mod_rewrite.so
+Include conf.modules.d/*.conf
+
+Apache启用php
+DirectoryIndex index.php
