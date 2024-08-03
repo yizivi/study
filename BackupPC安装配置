@@ -1,0 +1,56 @@
+1.1 安装
+配置文件路径在 /etc/BackupPC
+安装路径在 /usr/share/BackupPC/
+不一样的可使用 whereis BackupPC 查看路径
+
+
+yum install -y epel-release
+yum install -y backuppc
+
+yum install -y bzip2
+
+配置httpd
+
+#1.1修改为backuppc用户
+1、vi /etc/httpd/conf/httpd.conf
+2、修改ServerName为 localhost:80
+
+
+# 修改允许访问web页面
+vi /etc/httpd/conf.d/BackupPC.conf
+# Require local 改为 Require all granted
+
+
+# 设置登录账号密码
+htpasswd -c /etc/BackupPC/apache.users backuppc
+
+
+1.2 配置文件设置
+cd /etc/BackupPC
+vi config.pl
+
+$Conf{TopDir} = '/var/lib/backuppc' # 服务端备份存储目录
+$Conf{Language} = 'zh_CN'; # 改为中文页面
+$Conf{CgiAdminUsers} = ‘backuppc’; # 设置用户
+$Conf{PingPath} = ‘/bin/ping’;
+
+
+1.3修改Apache的MPM模式event，(worker)，改为prefork
+/etc/httpd/conf.modules.d/00-mpm.conf
+
+1.4启动
+# 启动backuppc
+systemctl start backuppc
+# 重启httpd
+systemctl restart httpd
+
+# 其他命令
+# 重启
+systemctl restart backuppc
+# 停止
+systemctl stop backuppc
+
+登录地址 http://IP/backuppc
+
+
+ubantu
