@@ -18,6 +18,10 @@ enable-custom-scripts = true
 vmware-toolbox-cmd config get deployPkg enable-custom-scripts
 [deployPkg] enable-custom-scripts = true
 
+使用 VMware Tools 配置文件
+tools.conf
+https://docs.vmware.com/cn/VMware-Tools/12.4.0/com.vmware.vsphere.vmwaretools.doc/GUID-EA16729B-43C9-4DF9-B780-9B358E71B4AB.html
+
 
 如果新虚拟机在启动时遇到自定义错误，将使用客户机的系统日志记录机制报告错误。可在 /var/log/vmware-imc/toolsDeployPkg.log 
 
