@@ -31,43 +31,7 @@ grub2-editenv list
 重启后引导选项应该就多出一个Windows 7
 
 
-自定义规范
-https://docs.vmware.com/cn/VMware-vSphere/7.0/com.vmware.vsphere.vm_admin.doc/GUID-7EF678CD-3BB0-4AA8-8430-17C657F0CD40.html
-前提条件
-验证满足所有自定义要求。请参见客户机操作系统自定义要求。
-运行自定义脚本：
-确认已安装 VMware Tools 版本 10.1.0 或更高版本。如果 VMware Tools 版本低于 10.1.0，
-则您尝试运行自定义脚本时，自定义将失败。
-在 VMware Tools 配置中，出于安全原因，enable-custom-scripts 选项默认处于取消激活状态。
-尝试在 enable-custom-scripts 选项处于取消激活状态的情况下运行自定义脚本时，
-自定义将失败并显示自定义错误。
-例如，要启用 enable-custom-scripts 选项，
-必须使用 config 命令以 root 用户身份运行 vmware-toolbox-cmd：
-vmware-toolbox-cmd config set deployPkg enable-custom-scripts true
-cat /etc/vmware-tools/tools.conf
-[deployPkg]
-enable-custom-scripts = true
-要验证是否正确设置了该选项，可以运行以下命令：
-vmware-toolbox-cmd config get deployPkg enable-custom-scripts
-[deployPkg] enable-custom-scripts = true
 
-
-如果新虚拟机在启动时遇到自定义错误，将使用客户机的系统日志记录机制报告错误。可在 /var/log/vmware-imc/toolsDeployPkg.log 
-
-#!/bin/sh
-if [ x$1 == x\"precustomization\" ]; then
-echo Do Precustomization tasks
-elif [ x$1 == x\"postcustomization\" ]; then
-echo Do Postcustomization tasks
-# 扫描新的磁盘空间
-pvscan
-# 将新的磁盘空间添加到klas卷组
-vgextend klas /dev/sda3
-# 扩展/root逻辑卷
-lvextend -l +100%FREE /dev/klas/root
-# 调整文件系统大小以适应新的逻辑卷大小
-resize2fs /dev/klas/root
-fi
 
 
 vmware-toolbox-cmd config set deployPkg enable-custom-scripts true
