@@ -1,0 +1,113 @@
+https://blog.csdn.net/u012150360/article/details/81333051
+
+选择要分区的硬盘：parted /dev/sdb
+
+使用print 对磁盘信息进行查看
+
+使用(parted) mklabel gpt
+
+使用mkpart primary 0% n%创建主分区，n为要分的分区占整个磁盘的百分比.（mkpart extended创建扩展分区）.
+例如我这里想要把这个8T的硬盘分成三块，其中前两块分别占2T，最后一块占4T,则可以写为:
+mkpart primary 0% 25%
+mkpart primary 26% 50%
+mkpart primary 51% 100%
+
+可用print 命令对分区进行查看
+
+将硬盘格式化为ext4格式mkfs.ext4 /dev/sdb1
+
+
+打开APP
+
+
+vickyleexy
+关注
+linux新增大于2T硬盘，分区并挂载 原创
+
+2018-08-02 09:38:44
+阅读量
+3.3w
+
+AI视频模型
+
+vickyleexy 
+
+码龄11年
+
+关注
+环境：Ubuntu 16
+硬盘：8T机械硬盘
+
+在分区以前，介绍一下步骤：
+Create a disklabel (partitioning) on disk.建立磁盘标签
+Create a partition of the appropriate size.分配适合的大小
+Create a filesystem (if needed).格式化分区，根据你需要的文件系统
+Mount.挂载
+一. 查看硬盘信息
+由于新添加硬盘时要确定是对哪个盘进行分区挂载，以免误操作而造成数据损失。
+使用 fdisk -l 进行查看。
+这里写图片描述
+从图中可以看出即将进行分区挂载的新硬盘大约是7.3T的可用空间，磁盘位置为/dev/sdb
+由于磁盘的空间大于2T，所以不能用直接使用fdisk的方法进行分区，在这里我们使用GPT分区。
+
+若使用fdisk进行分区则会提醒以下错误：
+这里写图片描述
+二. 建立磁盘标签
+选择要分区的硬盘：parted /dev/sdb
+这里写图片描述
+使用print 对磁盘信息进行查看：
+这里写图片描述
+可以看到磁盘还没有进行分区。
+
+create the GPT disklabel – in other words, create the partitioning tables to support GPT:
+建立GPT的磁盘标签，换句话说就是创建磁盘分区表支持GPT
+使用(parted) mklabel gpt
+这里写图片描述
+
+三.创建分区，并分配合适的大小
+create a partition:创建一个分区，这个步骤总是有错,选择cancle.
+这里写图片描述
+这一步就用到了对齐的概念。
+然而其实我并不是只想要一个分区，所以我们将上面的分区删除，然后重新进行分区：
+使用rm 编号 命令进行删除。
+这里写图片描述
+从图中打印的信息可以看到上面的分区已经删除，回到之前未进行分区的状态。
+
+使用mkpart primary 0% n%创建主分区，n为要分的分区占整个磁盘的百分比.（mkpart extended创建扩展分区）.
+例如我这里想要把这个8T的硬盘分成三块，其中前两块分别占2T，最后一块占4T,则可以写为:
+mkpart primary 0% 25%
+mkpart primary 26% 50%
+mkpart primary 51% 100%
+这里写图片描述
+可用print 命令对分区进行查看。
+
+四. 分区格式化
+可 将硬盘格式化为ext4格式，具体各格式的区别见ext2、ext3与ext4的区别
+这里写图片描述
+将三块分区分别进行格式化。硬盘比较大时时间可能也较长等待ing。
+
+五.挂载硬盘
+5.1 手动挂载
+然后在home目录下创建几个文件
+
+mkdir dev doc back
+
+将这三个分区挂载到这三个目录下
+
+[root@localhost back]# mkdir dev doc back
+
+[root@localhost back]# mount /dev/sdb1 back
+
+[root@localhost back]# mount /dev/sdb2 dev/
+
+[root@localhost back]# mount /dev/sdb3 doc/
+
+[root@localhost back]# df -h
+
+自动挂载
+修改fstab文件，linux启动时，会从/etc/fstab自动扫描挂载。
+sudo vim /etc/fstab
+
+本例，在fstab文件中添加sdb1分区自动挂载的配置如下：
+/dev/sdb1 /mnt/sdb1 ext4 defaults 0 2
+然后电脑重启即可。使用fdisk -l命令可查看分区和挂载后的硬盘情况。
