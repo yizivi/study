@@ -1,0 +1,9 @@
+如果文件index.html不存在，它将列出目录中的文件，它使用ISO-8859-1作为默认编码
+
+
+
+在httpd.conf下, 随便找个地方把下面这个字段扔上去, 重启即可
+
+IndexOptions Charset +UTF-8
+
+bingo，解决了。
