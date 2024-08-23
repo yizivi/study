@@ -5,3 +5,11 @@
 IndexOptions Charset +UTF-8
 
 bingo，解决了。
+
+如果你有UTF-8格式的长文件名，给你一个提示:默认情况下，它们会被缩短到20个字节，所以可能会发生最后一个字符被“切成两半”，因此无法正确识别的情况。然后，您可能需要设置以下内容：
+
+IndexOptions Charset=UTF-8 NameWidth=*
+
+NameWidth设置将阻止缩短文件名，使其正确显示和可读性。
+
+正如其他用户已经提到的，这应该添加到httpd.conf或apache2.conf (如果您有管理员权限)或.htaccess (如果您没有)。
