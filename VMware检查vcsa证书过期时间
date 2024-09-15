@@ -1,0 +1,16 @@
+检查vcsa证书过期时间
+for store in $(/usr/lib/vmware-vmafd/bin/vecs-cli store list | grep -v TRUSTED_ROOT_CRLS); do echo "[*] Store :" $store; /usr/lib/vmware-vmafd/bin/vecs-cli entry list --store $store --text | grep -ie "Alias" -ie "Not After";done;
+
+检查除了sts之外还有没有其他证书过期
+for store in $(/usr/lib/vmware-vmafd/bin/vecs-cli store list | grep -v TRUSTED_ROOT_CRLS); do echo "[*] Store :" $store; /usr/lib/vmware-vmafd/bin/vecs-cli entry list --store $store --text | grep -ie "Alias" -ie "Not After";done;
+
+重置或续订证书
+/usr/lib/vmware-vmca/bin/certificate-manager
+
+查看证书
+/usr/lib/vmware-vmafd/bin/vecs-cli store list 
+/usr/lib/vmware-vmafd/bin/vecs-cli store list  --store storename
+
+清理vcsa空间
+cd /storage/archive/vpostgres
+find * -mtime +30 -exec rm ｛｝\；
